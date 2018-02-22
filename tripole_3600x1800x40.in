@@ -1,0 +1,13 @@
+ &nml1 
+   gridin          = '/home/ckeppenn/odas-507/hr001/grid_spec.nc'
+ , gridout         = '/discover/nobackup/bzhao/for_ckeppenn/grid_cice_3600x1800x40.bin'   
+ , vgridout        = '/discover/nobackup/bzhao/for_ckeppenn/vgrid_cice_3600x1800x40.bin'   
+ , kmtout          = '/discover/nobackup/bzhao/for_ckeppenn/kmt_cice_3600x1800x40.bin'   
+ , gridin_format   = 'nc'
+ , gridout_format  = 'bin'
+ , nx_global       = 3600
+ , ny_global       = 1800
+ , iob             = 340
+ , job             = 409
+/
+   

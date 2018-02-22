@@ -1,0 +1,12 @@
+ &nml1 
+   gridin          = 'grid_spec.nc'
+ , gridout         = 'grid_cice_le.bin'   
+ , kmtout          = 'kmt_cice.bin'   
+ , gridin_format   = 'nc'
+ , gridout_format  = 'bin'
+ , nx_global       = 360
+ , ny_global       = 200
+ , iob             = 100
+ , job             = 100
+/
+   
