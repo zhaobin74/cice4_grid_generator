@@ -67,6 +67,8 @@
       real(kind=dbl_kind), allocatable    :: yt(:,:)
       real(kind=dbl_kind), allocatable    :: xe(:,:)
       real(kind=dbl_kind), allocatable    :: ye(:,:)
+      real(kind=dbl_kind), allocatable    :: tarea(:,:)
+      real(kind=dbl_kind), allocatable    :: uarea(:,:)
       real(kind=dbl_kind), allocatable    :: geo_latv(:,:)
       real(kind=dbl_kind), allocatable    :: geo_lonv(:,:)
 !
@@ -112,6 +114,8 @@
       allocate(yt(nx_global, ny_global), stat=my_status)
       allocate(xe(nx_global+1, ny_global+1), stat=my_status)
       allocate(ye(nx_global+1, ny_global+1), stat=my_status)
+      allocate(tarea(nx_global, ny_global), stat=my_status)
+      allocate(uarea(nx_global, ny_global), stat=my_status)
 
       allocate(geo_latv(nx_global+1, ny_global+1), stat=my_status)
       allocate(geo_lonv(nx_global+1, ny_global+1), stat=my_status)
@@ -355,6 +359,8 @@
          call get_field_nc(fid_in, 'y_C'    , yc    )
          call get_field_nc(fid_in, 'x_T'    , xt    )
          call get_field_nc(fid_in, 'y_T'    , yt    )
+         call get_field_nc(fid_in, 'area_T' , tarea )
+         call get_field_nc(fid_in, 'area_C' , uarea )
          call get_field_nc(fid_in, 'x_E'    , xe(1:nx_global, 1:ny_global))
          call get_field_nc(fid_in, 'y_E'    , ye(1:nx_global, 1:ny_global))
 
@@ -363,6 +369,7 @@
              print*, &
                    'Cannot close '//trim(gridin)
           endif
+
 
 
       else
@@ -390,8 +397,10 @@
       print*, 'xc,yc (deg)  from grid spec: ', xc(iob, job), yc(iob, job)
       print*, 'xc,yc (deg)  from vert arr : ', ulon(iob, job, 3)*rad_to_deg, ulat(iob, job, 3)*rad_to_deg
 
+      xt = xt / rad_to_deg 
+      yt = yt / rad_to_deg 
 
-       anglet = sinrot/rad_to_deg
+      anglet = sinrot/rad_to_deg
         
      
        amin = minval(ulat)*rad_to_deg
@@ -422,6 +431,14 @@
          nrec = 7 
          write(fid_out,rec=nrec) angle  
          nrec = 8 
+         write(fid_out,rec=nrec) yt 
+         nrec = 9 
+         write(fid_out,rec=nrec) xt 
+         nrec = 10 
+         write(fid_out,rec=nrec) tarea
+         nrec = 11 
+         write(fid_out,rec=nrec) uarea
+         nrec = 12 
          write(fid_out,rec=nrec) anglet 
          close(fid_out) 
          nbits = 32      
@@ -478,6 +495,8 @@
       deallocate(yt)
       deallocate(xe)
       deallocate(ye)
+      deallocate(tarea)
+      deallocate(uarea)
 
       deallocate(geo_latv)
       deallocate(geo_lonv)
