@@ -61,6 +61,12 @@
          amin, amax         ! min and max values of input array
       real (kind=dbl_kind) :: &
          lon_scale
+      real(kind=dbl_kind), allocatable    :: xc(:,:)
+      real(kind=dbl_kind), allocatable    :: yc(:,:)
+      real(kind=dbl_kind), allocatable    :: xt(:,:)
+      real(kind=dbl_kind), allocatable    :: yt(:,:)
+      real(kind=dbl_kind), allocatable    :: xe(:,:)
+      real(kind=dbl_kind), allocatable    :: ye(:,:)
       real(kind=dbl_kind), allocatable    :: geo_latv(:,:)
       real(kind=dbl_kind), allocatable    :: geo_lonv(:,:)
 !
@@ -100,6 +106,12 @@
       allocate(angle(nx_global, ny_global), stat=my_status)
       allocate(anglet(nx_global, ny_global), stat=my_status)
       allocate(ht(nx_global, ny_global), stat=my_status)
+      allocate(xc(nx_global, ny_global), stat=my_status)
+      allocate(yc(nx_global, ny_global), stat=my_status)
+      allocate(xt(nx_global, ny_global), stat=my_status)
+      allocate(yt(nx_global, ny_global), stat=my_status)
+      allocate(xe(nx_global+1, ny_global+1), stat=my_status)
+      allocate(ye(nx_global+1, ny_global+1), stat=my_status)
 
       allocate(geo_latv(nx_global+1, ny_global+1), stat=my_status)
       allocate(geo_lonv(nx_global+1, ny_global+1), stat=my_status)
@@ -176,7 +188,7 @@
          !enddo  
          geo_latv(1:nx_global,ny_global+1) = ulat(1:nx_global,ny_global,4)
 
-         geo_lonv(181,411) = -280.0_8
+        ! geo_lonv(181,411) = -280.0_8
 
          print*, '===============================================' 
          print*, geo_lonv(iob,job),     geo_latv(iob,job)
@@ -337,6 +349,15 @@
            stop
          endif
 
+
+         call get_field_nc(fid_in, 'angle_T', sinrot)
+         call get_field_nc(fid_in, 'x_C'    , xc    )
+         call get_field_nc(fid_in, 'y_C'    , yc    )
+         call get_field_nc(fid_in, 'x_T'    , xt    )
+         call get_field_nc(fid_in, 'y_T'    , yt    )
+         call get_field_nc(fid_in, 'x_E'    , xe(1:nx_global, 1:ny_global))
+         call get_field_nc(fid_in, 'y_E'    , ye(1:nx_global, 1:ny_global))
+
           my_status = nf90_close(fid_in)
           if (my_status /= nf90_noerr) then
              print*, &
@@ -351,11 +372,23 @@
 
       do j=1,ny_global
         do i=1,nx_global
-           lon_scale    = cos((geo_latv(i,j  )+geo_latv(i+1,j  )+geo_latv(i,j+1)+geo_latv(i+1,j+1))*atan(1.0)/180)
-           anglet(i,j)  = atan2((geo_lonv(i,j+1)+geo_lonv(i+1,j+1)-geo_lonv(i,j)-geo_lonv(i+1,j))&
-                         *lon_scale, geo_latv(i,j+1)+geo_latv(i+1,j+1)-geo_latv(i,j)-geo_latv(i+1,j) )
+           lon_scale    = cos(yt(i,j)/rad_to_deg)
+           if (i > 1) then
+              anglet(i,j) = atan2(ye(i,j) - ye(i-1,j), (xe(i,j) - xe(i-1,j))*lon_scale)
+           endif
+           if(i == iob .and. j==job) then
+              print*, 'lon_scale = ', lon_scale
+              print*, 'yt        = ', yt(i,j)
+              print*, 'ye        = ', ye(i,j),  ye(i-1,j), ye(i,j) - ye(i-1,j)
+              print*, 'xe        = ', xe(i,j),  xe(i-1,j), xe(i,j) - xe(i-1,j)
+           endif
         enddo
       enddo
+
+      print*, 'anglet (deg) from grid spec: ', sinrot(iob, job)
+      print*, 'anglet (deg) computed      : ', anglet(iob, job)*rad_to_deg
+      print*, 'xc,yc (deg)  from grid spec: ', xc(iob, job), yc(iob, job)
+      print*, 'xc,yc (deg)  from vert arr : ', ulon(iob, job, 3)*rad_to_deg, ulat(iob, job, 3)*rad_to_deg
      
        amin = minval(ulat)*rad_to_deg
        amax = maxval(ulat, mask = ulat/= spval_dbl)*rad_to_deg
@@ -411,12 +444,12 @@
          print*, 'at ', iob, job
          print*, ulat(iob,job,3)*rad_to_deg, ulon(iob,job,3)*rad_to_deg
          !print*, ulat(iob,job)*rad_to_deg, ulon(iob,job)*rad_to_deg
-         print*, htn(iob,job),  hte(iob,job)
-         print*, hus(iob,job),  huw(iob,job)
-         print*, angle(iob,job)*rad_to_deg, angle(iob-1,job-1)*rad_to_deg, &
+         print*, 'htn, hte: ', htn(iob,job),  hte(iob,job)
+         print*, 'hus, huw: ', hus(iob,job),  huw(iob,job)
+         print*, 'angleu  : ', angle(iob,job)*rad_to_deg, angle(iob-1,job-1)*rad_to_deg, &
                  angle(iob,job-1)*rad_to_deg, angle(iob-1,job)*rad_to_deg
-         print*, anglet(iob,job)*rad_to_deg 
-         print*, ht(iob,job), kmt(iob,job)
+         print*, 'anglet  :', anglet(iob,job)*rad_to_deg 
+         print*, 'ht, kmt :', ht(iob,job), kmt(iob,job)
       else
          print*, 'output CICE grid must be in BINARY format'
          stop
@@ -435,9 +468,43 @@
       deallocate(cosrot)
       deallocate(anglet)
       deallocate(ht)
+      deallocate(xc)
+      deallocate(yc)
+      deallocate(xt)
+      deallocate(yt)
+      deallocate(xe)
+      deallocate(ye)
 
       deallocate(geo_latv)
       deallocate(geo_lonv)
+
+contains
+
+
+       subroutine get_field_nc(fid, varname, var)
+
+         integer,      intent(in) :: fid
+         character(*), intent(in) :: varname
+         real(kind=dbl_kind), dimension(:,:), intent(out) :: var
+
+
+         integer :: my_status, varid 
+       
+         my_status = nf90_inq_varid(fid, varname, varid)
+         if (my_status /= nf90_noerr) then
+           print*, & 
+            'Cannot find variable '//trim(varname)
+         else
+            print*, trim(varname), ' id is ', varid  
+         endif
+         my_status = nf90_get_var(fid, varid, var)
+         if (my_status /= nf90_noerr) then
+             print*,  'Error reading variable '//trim(varname)
+             stop
+         endif
+
+       end subroutine get_field_nc 
+
 
       end
 
