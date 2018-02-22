@@ -389,6 +389,10 @@
       print*, 'anglet (deg) computed      : ', anglet(iob, job)*rad_to_deg
       print*, 'xc,yc (deg)  from grid spec: ', xc(iob, job), yc(iob, job)
       print*, 'xc,yc (deg)  from vert arr : ', ulon(iob, job, 3)*rad_to_deg, ulat(iob, job, 3)*rad_to_deg
+
+
+       anglet = sinrot/rad_to_deg
+        
      
        amin = minval(ulat)*rad_to_deg
        amax = maxval(ulat, mask = ulat/= spval_dbl)*rad_to_deg
@@ -417,8 +421,8 @@
          write(fid_out,rec=nrec) huw  
          nrec = 7 
          write(fid_out,rec=nrec) angle  
-         !nrec = 8 
-         !write(fid_out,rec=nrec) anglet 
+         nrec = 8 
+         write(fid_out,rec=nrec) anglet 
          close(fid_out) 
          nbits = 32      
          nbytes = nbits/8

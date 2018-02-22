@@ -1,0 +1,13 @@
+ &nml1 
+   gridin          = 'grid_spec_1440x1080.nc'
+ , gridout         = 'grid_cice.bin'   
+ , kmtout          = 'kmt_cice.bin'   
+ , vgridout        = 'vgrid_cice.bin'   
+ , gridin_format   = 'nc'
+ , gridout_format  = 'bin'
+ , nx_global       = 1440
+ , ny_global       = 1080
+ , iob             = 361
+ , job             = 1080
+/
+   
