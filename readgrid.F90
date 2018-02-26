@@ -25,7 +25,7 @@
       real processing_time, combination_time
      
       character(len=char_len_long) :: &
-           gridin, gridout, kmtout, gridin_format, gridout_format
+           gridin, gridout, vgridout, kmtout, gridin_format, gridout_format
       real(kind=dbl_kind) :: my_pi, rad_to_deg
 
       character(len=char_len_long) :: &
@@ -38,6 +38,8 @@
            varid, nrec, nbits
       integer (kind=int_kind) :: &
            nx_global, ny_global, iob, job
+      integer (kind=int_kind) :: &
+           ios
 
       real (kind=dbl_kind) :: &
          amin, amax         ! min and max values of input array
@@ -57,7 +59,8 @@
 !     Namelists
 !     ---------
 !
-      namelist /nml1  / gridin, gridout, gridin_format, gridout_format, &
+      namelist /nml1  / gridin, gridout, vgridout, &
+                        gridin_format, gridout_format, &
                         kmtout, nx_global, ny_global, iob, job   
 !
       read(5,nml1)
@@ -109,6 +112,12 @@
          read(fid_out,rec=nrec) huw  
          nrec = 7 
          read(fid_out,rec=nrec) angle  
+
+         nrec = 12 
+         read(fid_out,rec=nrec, iostat=ios) angle  
+         print*, 'ios = ', ios  
+         if(ios /= 0) print*,'rec # ', nrec, ' does not exist!'
+          
          close(fid_out) 
          nbits = 32      
          open(fid_out,file=kmtout,recl=nx_global*ny_global*nbits/8, &
