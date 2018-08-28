@@ -2,6 +2,11 @@
 # Suppresses display of executed commands
 # .SILENT:
 
+default_target: all
+
+.PHONY : default_target
+
+
 CC = gcc
 CCFLAGS = 
 #FC = ifort
