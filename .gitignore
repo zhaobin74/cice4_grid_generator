@@ -1,0 +1,15 @@
+
+# excludes 
+
+*.o
+
+
+*.bin
+
+*.in
+
+gengrid_mom6
+gengrid
+gengrid_new
+readgrid
+
