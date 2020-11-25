@@ -1,0 +1,14 @@
+ &nml1 
+   gridin          = '/home/yvikhlia/nobackup/coupled/Forcings/MOM6/CF0090x6C_TM0360xTM0320/INPUT/ocean_hgrid.nc'
+   maskin          = '/home/yvikhlia/nobackup/coupled/Forcings/MOM6/CF0090x6C_TM0360xTM0320/INPUT/ocean_mask.nc'
+ , gridout         = 'grid_cice.bin'   
+ , kmtout          = 'kmt_cice.bin'   
+ , vgridout        = 'vgrid_cice.bin'   
+ , gridin_format   = 'nc'
+ , gridout_format  = 'bin'
+ , nx_global       = 360
+ , ny_global       = 320
+ , iob             = 180
+ , job             = 245
+/
+   
