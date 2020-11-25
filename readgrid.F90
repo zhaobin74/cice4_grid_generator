@@ -25,7 +25,7 @@
       real processing_time, combination_time
      
       character(len=char_len_long) :: &
-           gridin, gridout, vgridout, kmtout, gridin_format, gridout_format
+           gridin, maskin, gridout, vgridout, kmtout, gridin_format, gridout_format
       real(kind=dbl_kind) :: my_pi, rad_to_deg
 
       character(len=char_len_long) :: &
@@ -59,7 +59,7 @@
 !     Namelists
 !     ---------
 !
-      namelist /nml1  / gridin, gridout, vgridout, &
+      namelist /nml1  / gridin, maskin, gridout, vgridout, &
                         gridin_format, gridout_format, &
                         kmtout, nx_global, ny_global, iob, job   
 !
