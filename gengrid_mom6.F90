@@ -57,6 +57,7 @@
       real(kind=dbl_kind), allocatable    :: ht(:,:)
       real (kind=dbl_kind) :: &
          amin, amax         ! min and max values of input array
+      integer ::  mloc(2)
       real (kind=dbl_kind) :: &
          lon_scale
       real(kind=dbl_kind), allocatable    :: xc(:,:)
@@ -164,6 +165,13 @@
      
          hte = dy(3::2, 1::2) * 100
 
+         ! avoid 0 hte's because CICE4 remap transport scheme 
+         ! didn't check landmask before performing divisions
+         ! on hte's
+         where(hte == 0.0)
+            hte = 3.11e-10 
+         endwhere
+
          huw = dy(2::2, 2::2) * 100
 
          hus = dx(2::2, 2::2) * 100
@@ -243,6 +251,36 @@
        amax = maxval(ulat, mask = ulat/= spval_dbl)*rad_to_deg
        print*, ' ulat min/max', amin, amax
 
+       amin = minval(tarea)
+       amax = maxval(tarea)
+       mloc = minloc(tarea)
+       print*, ' tarea min/max', amin, amax
+       print*, ' tarea minloc', mloc(1), mloc(2)
+
+       amin = minval(hus)
+       amax = maxval(hus)
+       mloc = minloc(hus)
+       print*, ' hus min/max', amin, amax
+       print*, ' hus minloc', mloc(1), mloc(2)
+
+       amin = minval(huw)
+       amax = maxval(huw)
+       mloc = minloc(huw)
+       print*, ' huw min/max', amin, amax
+       print*, ' huw minloc', mloc(1), mloc(2)
+
+       amin = minval(hte)
+       amax = maxval(hte)
+       mloc = minloc(hte)
+       print*, ' hte min/max', amin, amax
+       print*, ' hte minloc', mloc(1), mloc(2)
+
+       amin = minval(htn)
+       amax = maxval(htn)
+       mloc = minloc(htn)
+       print*, ' htn min/max', amin, amax
+       print*, ' htn minloc', mloc(1), mloc(2)
+
       if(gridout_format == 'bin') then
          nbits = 64      
          nbytes = nbits/8
@@ -297,14 +335,14 @@
          !write(fid_out,rec=nrec) kmt 
          !close(fid_out) 
          print*, 'at ', iob, job
-         print*, ulat(iob,job)*rad_to_deg, ulon(iob,job)*rad_to_deg
-         !print*, ulat(iob,job)*rad_to_deg, ulon(iob,job)*rad_to_deg
+         print*, 'ulon, ulat: ', ulon(iob,job)*rad_to_deg, ulat(iob,job)*rad_to_deg
          print*, 'htn, hte: ', htn(iob,job),  hte(iob,job)
          print*, 'hus, huw: ', hus(iob,job),  huw(iob,job)
          print*, 'angleu  : ', angle(iob,job)*rad_to_deg, angle(iob-1,job-1)*rad_to_deg, &
                  angle(iob,job-1)*rad_to_deg, angle(iob-1,job)*rad_to_deg
          print*, 'anglet  :', anglet(iob,job)*rad_to_deg 
-         !print*, 'ht, kmt :', ht(iob,job), kmt(iob,job)
+         print*, 'kmt :',  kmti(iob,job)
+         print*, 'tarea :',  tarea(iob,job)
       else
          print*, 'output CICE grid must be in BINARY format'
          stop
