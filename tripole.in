@@ -1,7 +1,7 @@
  &nml1 
    gridin          = 'grid_spec.nc'
- , gridout         = 'grid_cice_le.bin'   
- , kmtout          = 'kmt_cice.bin'   
+ , gridout         = 'grid_cice-360x200.bin'   
+ , kmtout          = 'kmt_cice-360x200.bin'   
  , gridin_format   = 'nc'
  , gridout_format  = 'bin'
  , nx_global       = 360
