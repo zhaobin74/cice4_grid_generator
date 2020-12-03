@@ -15,12 +15,12 @@
 
 There are 3 executables which are used for different MOM grid format
 
-- gengrid
+- ~~gengrid~~
 
    * this version works with the old MOM4 grid spec
    * no longer used 
 
-- gengrid_new
+- **gengrid_new**
 
    * this version works with MOM5 grid spec
    * there are 2 main resolutions supported: **360x200**, **1440x1080**
@@ -44,7 +44,7 @@ There are 3 executables which are used for different MOM grid format
 /
 ``` 
 
-- gengrid_mom6
+- **gengrid_mom6**
 
    * this version works with new MOM6 grid spec (Mosaic)
    * there are 2 main resolutions supported: **360x210**, **360x320**, more to come...
