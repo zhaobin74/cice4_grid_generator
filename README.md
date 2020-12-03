@@ -30,7 +30,7 @@ There are 3 executables which are used for different MOM grid format
 
      where `input_nml_file` has the following format:
 
-       ```
+```
 &nml1 
    gridin          = 'grid_spec.nc'  !input mom grid spec file
  , gridout         = 'grid_cice-360x200.bin' ! output cice grid file 
@@ -42,8 +42,7 @@ There are 3 executables which are used for different MOM grid format
  , iob             = 100             ! output grid point i index, 1 <= i <= nx_global 
  , job             = 100             ! output grid point j index, 1 <= j <= ny_global
 /
-
-       ``` 
+``` 
  
  
  
