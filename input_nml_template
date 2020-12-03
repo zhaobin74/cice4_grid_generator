@@ -1,6 +1,6 @@
  &nml1 
-   gridin          = '/home/yvikhlia/nobackup/coupled/Forcings/MOM6/CF0090x6C_TM0360xTM0320/INPUT/ocean_hgrid.nc'
-   maskin          = '/home/yvikhlia/nobackup/coupled/Forcings/MOM6/CF0090x6C_TM0360xTM0320/INPUT/ocean_mask.nc'
+   gridin          = 'ocean_hgrid.nc'
+   maskin          = 'ocean_mask.nc'
  , gridout         = 'grid_cice.bin'   
  , kmtout          = 'kmt_cice.bin'   
  , vgridout        = 'vgrid_cice.bin'   
