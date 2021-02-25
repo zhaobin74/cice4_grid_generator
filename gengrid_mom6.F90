@@ -16,6 +16,8 @@
 
       real (kind=dbl_kind), parameter :: &
         spval_dbl = 1.0e30_dbl_kind    ! special value (double precision)
+      real (kind=dbl_kind), parameter :: &
+        eps = 1.0e-11_dbl_kind    ! special value (double precision)
       integer, parameter :: vertex  = 4
 
       real alon, C2RAD,  dlon1, deq, dsig, &
@@ -60,6 +62,8 @@
       integer ::  mloc(2)
       real (kind=dbl_kind) :: &
          lon_scale
+      real (kind=dbl_kind) :: &
+         lpole, rpole, ang
       real(kind=dbl_kind), allocatable    :: xc(:,:)
       real(kind=dbl_kind), allocatable    :: yc(:,:)
       real(kind=dbl_kind), allocatable    :: xt(:,:)
@@ -244,6 +248,29 @@
       print*, 'xc,yc (deg)  from grid spec: ', xc(iob, job), yc(iob, job)
       print*, 'xc,yc (deg)  from vert arr : ', ulon(iob, job, 3)*rad_to_deg, ulat(iob, job, 3)*rad_to_deg
 #endif
+
+
+       lpole = ulon(1,ny_global)*rad_to_deg  
+       rpole = ulon(nx_global/2,ny_global)*rad_to_deg  
+       ang = angle(nx_global-nx_global/8,ny_global)*rad_to_deg  
+       if (lpole < 0.0) lpole = lpole + 360.0
+       if (rpole < 0.0) rpole = rpole + 360.0
+       if (lpole > 180.0 .and. rpole < 180.0) then
+          print*, 'WARNING: Non standard tripolar grid!!!'
+          print*, 'WARNING: Rotation angle needs careful check!!!'
+       else
+          if (abs(ang - (-90.0)) > eps) then
+             print*, ' '    
+             print*, '??????????????????????????????????????????????????????????????'
+             print*, 'ERROR: Wrong angle for CICE rotation code!!!'
+             print*, 'ERROR: angle is', ang  
+             print*, 'ERROR: angle must be -90 degrees at this location!!!'
+             print*, 'ERROR: grid files will be produced, BUT...'
+             print*, 'ERROR: You should **DOUBLE CHECK** the original MOM6 grid'
+             print*, '??????????????????????????????????????????????????????????????'
+             print*, ' '    
+          endif 
+       endif 
 
         
      
