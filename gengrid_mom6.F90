@@ -281,6 +281,30 @@
        print*, ' htn min/max', amin, amax
        print*, ' htn minloc', mloc(1), mloc(2)
 
+       amin = minval(anglet)
+       amax = maxval(anglet)
+       mloc = maxloc(anglet)
+       print*, ' anglet min/max', amin, amax
+       mloc = maxloc(anglet)
+       print*, ' anglet maxloc', mloc(1), mloc(2)
+       mloc = minloc(anglet)
+       print*, ' anglet minloc', mloc(1), mloc(2)
+
+       amin = minval(angle)
+       amax = maxval(angle)
+       mloc = maxloc(angle)
+       print*, ' angle min/max', amin, amax
+       print*, ' angle maxloc', mloc(1), mloc(2)
+       mloc = minloc(angle)
+       print*, ' angle minloc', mloc(1), mloc(2)
+
+# if 0
+      do i=1,nx_global
+         print*, i, angle(i,ny_global), htn(i, ny_global) 
+      enddo 
+#endif
+
+
       if(gridout_format == 'bin') then
          nbits = 64      
          nbytes = nbits/8
