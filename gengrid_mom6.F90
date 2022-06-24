@@ -128,11 +128,8 @@
       allocate(uarea(nx_global, ny_global), stat=my_status)
 
 
-      allocate(x(2*nx_global+1, 2*ny_global+1), stat=my_status)
-      allocate(y(2*nx_global+1, 2*ny_global+1), stat=my_status)
-      allocate(dx(2*nx_global,  2*ny_global+1), stat=my_status)
-      allocate(dy(2*nx_global+1,2*ny_global  ), stat=my_status)
-      allocate(angle_dx(2*nx_global+1, 2*ny_global+1), stat=my_status)
+      allocate(x(nx_global+1, ny_global+1), stat=my_status)
+      allocate(y(nx_global+1, ny_global+1), stat=my_status)
       allocate(area(2*nx_global,2*ny_global  ), stat=my_status)
       
       if(gridin_format == 'nc') then
@@ -143,13 +140,13 @@
                    'Cannot open '//trim(gridin)
          endif
  
-         call get_field_nc(fid_in, 'x'    , x    )
-         call get_field_nc(fid_in, 'y'    , y    )
+         call get_field_nc(fid_in, 'lon_corners'    , x    )
+         call get_field_nc(fid_in, 'lat_corners'    , y    )
+         call get_field_nc(fid_in, 'lon_centers'    , xt   )
+         call get_field_nc(fid_in, 'lat_centers'    , yt   )
         
-         ulat = y(3::2,3::2) 
-         ulon = x(3::2,3::2) 
-         yt   = y(2::2,2::2)
-         xt   = x(2::2,2::2)
+         ulat = y(2:,2:) 
+         ulon = x(2:,2:) 
 
          print*, '************************************************'
          print*, ulon(iob,job), ulat(iob,job)
@@ -161,13 +158,11 @@
          yt   = yt   / rad_to_deg 
 
 
-         call get_field_nc(fid_in, 'dx'    , dx    )
-         call get_field_nc(fid_in, 'dy'    , dy    )
+         call get_field_nc(fid_in, 'htn'    , htn    )
+         call get_field_nc(fid_in, 'hte'    , hte    )
 
 
-         htn = dx(1::2, 3::2) * 100
-     
-         hte = dy(3::2, 1::2) * 100
+         htn = htn * 100
 
          ! avoid 0 hte's because CICE4 remap transport scheme 
          ! didn't check landmask before performing divisions
@@ -175,20 +170,23 @@
          where(hte == 0.0)
             hte = 3.11e-10 
          endwhere
+         hte = hte * 100
 
-         huw = dy(2::2, 2::2) * 100
+         call get_field_nc(fid_in, 'huw'    , huw    )
+         call get_field_nc(fid_in, 'hus'    , hus    )
 
-         hus = dx(2::2, 2::2) * 100
+         huw = huw * 100
+         hus = hus * 100
 
+         call get_field_nc(fid_in, 'anglet'    , anglet    )
+         call get_field_nc(fid_in, 'angleu'    , angle    )
+         angle  = angle/rad_to_deg
+         anglet = anglet/rad_to_deg
 
-
-         call get_field_nc(fid_in, 'angle_dx'    , angle_dx    )
-         angle  = angle_dx(3::2,3::2)/rad_to_deg
-         anglet = angle_dx(2::2,2::2)/rad_to_deg
-
-         call get_field_nc(fid_in, 'area'    , area    )
-         tarea = area(1::2,1::2)
-         uarea = area(2::2,2::2)
+         call get_field_nc(fid_in, 'areat'    , tarea    )
+         call get_field_nc(fid_in, 'areau'    , uarea    )
+         !tarea = area(1::2,1::2)
+         !uarea = area(2::2,2::2)
 
          !call get_field_nc(fid_in, 'angle_T', sinrot)
          !call get_field_nc(fid_in, 'x_C'    , xc    )
@@ -325,12 +323,6 @@
        mloc = minloc(angle)
        print*, ' angle minloc', mloc(1), mloc(2)
 
-# if 0
-      do i=1,nx_global
-         print*, i, angle(i,ny_global), htn(i, ny_global) 
-      enddo 
-#endif
-
 
       if(gridout_format == 'bin') then
          nbits = 64      
@@ -340,10 +332,8 @@
          open(fid_out,file=gridout,recl=recl_length, &
                   form='unformatted',access='direct')          
          nrec = 1 
-         !write(fid_out,rec=nrec) ulat(:,:,3)  
          write(fid_out,rec=nrec) ulat  
          nrec = 2 
-         !write(fid_out,rec=nrec) ulon(:,:,3)  
          write(fid_out,rec=nrec) ulon
          nrec = 3 
          write(fid_out,rec=nrec) htn 
@@ -423,9 +413,9 @@
 
       deallocate(x)
       deallocate(y)
-      deallocate(dx)
-      deallocate(dy)
-      deallocate(angle_dx)
+      ! deallocate(dx)
+      ! deallocate(dy)
+      ! deallocate(angle_dx)
       deallocate(area)
 
 contains
