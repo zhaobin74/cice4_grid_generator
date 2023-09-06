@@ -9,10 +9,6 @@ import datetime
 import time
 import sys
 import os
-sys.path.append('/home/bzhao/python_utils')
-#import read_utils
-import data_utils
-#import get_info
 
 
 
