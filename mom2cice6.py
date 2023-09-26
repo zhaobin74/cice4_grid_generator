@@ -5,10 +5,23 @@ import numpy.ma as ma
 import array
 import glob
 import struct
+import hashlib
 import datetime
 import time
 import sys
 import os
+
+
+
+def checksum(filename: str, blocksize: int = 4096) -> str:
+    hsh = hashlib.md5()
+    with open(filename, "rb") as f:
+        while True:
+            buf = f.read(blocksize)
+            if not buf:
+                break
+            hsh.update(buf)
+    return hsh.hexdigest()
 
 
 
@@ -18,6 +31,13 @@ topo_file = sys.argv[2]
 grid_out = 'cice6_grid.nc'
 kmt_out = 'cice6_kmt.nc'
 bathy_out = 'cice6_global.bathy.nc'
+
+
+
+cm1 = checksum(mapl_tripole)
+cm2 = checksum(topo_file)
+
+
 
 ncfilein = Dataset(topo_file, 'r', format='NETCDF4')
 depth  = ncfilein.variables['depth'][:]
@@ -48,6 +68,7 @@ bathy.units = "m"
 depth = ma.masked_where(mask < 0.5, depth)
 bathy[:] = depth
 bathy.mssing_value = 1.e30
+ncfileout.setncattr_string(topo_file, cm2)
 #bathy._FillValue = 1.e30
 ncfileout.close()
 
@@ -60,6 +81,7 @@ kmt = ncfileout.createVariable("kmt", "f4",("y", "x",))
 kmt.units = "m"
 mask[mask > 0.5] = 1000.0
 kmt[:] = mask
+ncfileout.setncattr_string(topo_file, cm2)
 ncfileout.close()
 
 
@@ -79,6 +101,9 @@ create_var(ncfileout, "hte",  "f8", ("y", "x",), "cm", hte, 100.0)
 create_var(ncfileout, "hus",  "f8", ("y", "x",), "cm", hus, 100.0)
 create_var(ncfileout, "huw",  "f8", ("y", "x",), "cm", huw, 100.0)
 create_var(ncfileout, "angle",  "f8", ("y", "x",), "rad", angle, np.pi/180.0)
+
+ncfileout.setncattr_string(mapl_tripole, cm1)
+ncfileout.setncattr_string(topo_file, cm2)
 
 ncfileout.close()
 
