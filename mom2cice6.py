@@ -68,7 +68,17 @@ bathy.units = "m"
 depth = ma.masked_where(mask < 0.5, depth)
 bathy[:] = depth
 bathy.mssing_value = 1.e30
+lon = ncfileout.createVariable("TLON", "f4",("nj", "ni",), fill_value=1.e30)
+lon.long_name = "T grid center longitude"
+lon.units = "degrees_east"
+lon[:] = tlon
+lat = ncfileout.createVariable("TLAT", "f4",("nj", "ni",), fill_value=1.e30)
+lat.long_name = "T grid center latitude"
+lat.units = "degrees_north"
+lat[:] = tlat
+
 ncfileout.setncattr_string(topo_file, cm2)
+
 #bathy._FillValue = 1.e30
 ncfileout.close()
 
