@@ -70,4 +70,13 @@ There are 3 executables which are used for different MOM grid format
 ``` 
  
  
- 
+- **mom2cice6.py**
+
+   * this version works with new MOM6 grid spec (Mosaic) and generates CICE6 grid files
+   * there are 2 main resolutions supported: **1440x1080**, **540x458**, more to come...
+   * to generate the cice grid, run the following command
+
+       `python3 mom2cice6.py MAPL_Tripolar.nc ocean_topo.nc`
+
+     where `MAPL_Tripolar.nc` is a preprocessed META data file for MOM6 grid as used by GEOS coupled model
+     and `ocean_topo.nc` is typically distributed as part of MOM6 grid    
