@@ -38,7 +38,6 @@ cm1 = checksum(mapl_tripole)
 cm2 = checksum(topo_file)
 
 
-
 ncfilein = Dataset(topo_file, 'r', format='NETCDF4')
 depth  = ncfilein.variables['depth'][:]
 #ncfile.close()
@@ -77,6 +76,8 @@ lat.long_name = "T grid center latitude"
 lat.units = "degrees_north"
 lat[:] = tlat
 
+if '/' in topo_file:
+   topo_file = topo_file.replace('/', '$')
 ncfileout.setncattr_string(topo_file, cm2)
 
 #bathy._FillValue = 1.e30
